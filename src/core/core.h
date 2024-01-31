@@ -17,6 +17,7 @@
 #include "core/hle/service/plgldr/plgldr.h"
 #include "core/movie.h"
 #include "core/perf_stats.h"
+#include "video_core/gpu.h"
 
 namespace Frontend {
 class EmuWindow;

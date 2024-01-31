@@ -517,7 +517,7 @@ private:
                       position.z);
 
                 position *= VRSettings::values.vr_immersive_positional_factor;
-                VideoCore::g_renderer->Rasterizer()->SetVRData(position);
+                system.GPU().Renderer().Rasterizer()->SetVRData(position);
                 showLowerPanel = false;
             }
         }
