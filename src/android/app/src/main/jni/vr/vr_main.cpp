@@ -787,10 +787,10 @@ private:
     void HandleSessionStateChangedEvent(const XrEventDataSessionStateChanged& newState) {
         static XrSessionState lastState = XR_SESSION_STATE_UNKNOWN;
         if (newState.state != lastState) {
-            ALOGV("{}(): Received XR_SESSION_STATE_CHANGED state {}->{} "
-                "time {}",
-                __FUNCTION__, XrSessionStateToString(lastState),
-                XrSessionStateToString(newState), (void*)session, time);
+//            ALOGV("{}(): Received XR_SESSION_STATE_CHANGED state {}->{} "
+//                "time {}",
+//                __FUNCTION__, XrSessionStateToString(lastState),
+//                XrSessionStateToString(newState), (void*)session, time);
         }
         lastState = newState.state;
         switch (newState.state) {

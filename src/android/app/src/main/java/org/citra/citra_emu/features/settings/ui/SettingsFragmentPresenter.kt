@@ -1106,8 +1106,8 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                             R.string.vr_immersive_mode_title,
                             R.array.vrImmersiveModeNames,
                             R.array.vrImmersiveModeValues,
-                            IntSetting.VR_IMMERSIVE_MODE.key.toString(),
-                            IntSetting.VR_IMMERSIVE_MODE.defaultValue.toInt()
+                            IntSetting.VR_IMMERSIVE_MODE.key.toInt(),
+                            IntSetting.VR_IMMERSIVE_MODE.defaultValue.toString()
                     )
             )
             add(
