@@ -129,7 +129,7 @@ void main() {
     gl_Position = vec4(vtx_pos.x, vtx_pos.y, -vtx_pos.z, vtx_pos.w);
 )";
 
-    out += GenerateGLPositionAndGLClipDistanceBlock(use_clip_planes);
+    //out += GenerateGLPositionAndGLClipDistanceBlock(use_clip_planes);
 
     out += "}\n";
 

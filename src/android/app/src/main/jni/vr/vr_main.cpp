@@ -35,6 +35,8 @@ License     :   Licensed under GPLv3 or any later version.
 #include <sys/prctl.h>
 #include <unistd.h>
 
+#include "core/core.h"
+
 #include "video_core/renderer_base.h"
 #include "video_core/video_core.h"
 
@@ -292,6 +294,7 @@ private:
             mFrameIndex = 0;
             return;
         }
+        auto& system = Core::System::GetInstance();
         // Frame index starts at 1. I don't know why, we've always done this.
         // Doesn't actually matter, except to make the indices
         // consistent in traces
@@ -489,7 +492,7 @@ private:
 
         bool showLowerPanel = true;
         // Push the HMD position through to the Rasterizer to pass on to the VS Uniform
-        if (VideoCore::g_renderer && VideoCore::g_renderer->Rasterizer())
+        if (system.GPU().Renderer().Rasterizer())
         {
             //I am confused... but GetRollInRadians appears to return pitch
             float pitch = XrMath::Quatf::GetRollInRadians(gOpenXr->headLocation.pose.orientation);
@@ -499,7 +502,7 @@ private:
             {
                 //Disable position when looking down at the lower panel
                 Common::Vec3f position = {};
-                VideoCore::g_renderer->Rasterizer()->SetVRData(position);
+                system.GPU().Renderer().Rasterizer()->SetVRData(position);
             }
             else
             {
