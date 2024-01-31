@@ -40,6 +40,8 @@ License     :   Licensed under GPLv3 or any later version.
 #include "video_core/renderer_base.h"
 #include "video_core/video_core.h"
 
+[[maybe_unused]] const char* XrSessionStateToString(const XrSessionState state); // Function declaration
+
 #if defined(DEBUG_INPUT_VERBOSE)
 #define ALOG_INPUT_VERBOSE(...) ALOGI(__VA_ARGS__)
 #else
@@ -786,9 +788,9 @@ private:
         static XrSessionState lastState = XR_SESSION_STATE_UNKNOWN;
         if (newState.state != lastState) {
             ALOGV("{}(): Received XR_SESSION_STATE_CHANGED state {}->{} "
-                  "session={} time={}",
-                  __func__, XrSessionStateToString(lastState),
-                  XrSessionStateToString(newState.state), newState.session, newState.time);
+                "time {}",
+                __FUNCTION__, XrSessionStateToString(lastState),
+                XrSessionStateToString(newState), (void*)session, time);
         }
         lastState = newState.state;
         switch (newState.state) {
