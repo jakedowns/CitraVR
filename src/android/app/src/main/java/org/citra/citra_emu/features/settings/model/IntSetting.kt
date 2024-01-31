@@ -47,8 +47,8 @@ enum class IntSetting(
     USE_FRAME_LIMIT("use_frame_limit", Settings.SECTION_RENDERER, 1),
     VR_ENVIRONMENT("vr_environment", Settings.SECTION_VR,
         if (hMDType == VRUtils.HMDType.QUEST3.value) 1 else 2),
-    VR_CPU_LEVEL("vr_cpu_level", Settings.SECTION_VR, 4);
-
+    VR_CPU_LEVEL("vr_cpu_level", Settings.SECTION_VR, 4),
+    VR_IMMERSIVE_MODE("vr_immersive_mode", Settings.SECTION_VR, 0);
     override var int: Int = defaultValue
 
     override val valueAsString: String

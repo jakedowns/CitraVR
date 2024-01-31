@@ -1097,7 +1097,9 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                     R.array.vrCpuLevelNames,
                     R.array.vrCpuLevelValues,
                     IntSetting.VR_CPU_LEVEL.key,
-                    IntSetting.VR_CPU_LEVEL.defaultValue
+                    IntSetting.VR_CPU_LEVEL.defaultValue,
+                    IntSetting.VR_IMMERSIVE_MODE.key,
+                    IntSetting.VR_IMMERSIVE_MODE.defaultValue
                 )
             )
         }
