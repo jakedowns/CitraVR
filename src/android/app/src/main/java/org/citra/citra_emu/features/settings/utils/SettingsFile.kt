@@ -185,8 +185,14 @@ object SettingsFile {
 
     fun getSettingsFile(fileName: String): DocumentFile {
         val root = DocumentFile.fromTreeUri(CitraApplication.appContext, Uri.parse(userDirectory))
-        val configDirectory = root!!.findFile("config")
-        return configDirectory!!.findFile("$fileName.ini")!!
+        val configDirectory = root?.findFile("config") ?: root?.createDirectory("config")
+
+        var file = configDirectory?.findFile("$fileName.ini")
+        if (file == null && configDirectory != null) {
+            file = configDirectory.createFile("text/plain", "$fileName.ini")
+        }
+
+        return file!!
     }
 
     private fun getCustomGameSettingsFile(gameId: String): DocumentFile {
