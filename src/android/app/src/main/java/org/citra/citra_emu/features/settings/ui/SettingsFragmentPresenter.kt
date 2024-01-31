@@ -757,7 +757,7 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                     R.string.factor3d,
                     R.string.factor3d_description,
                     0,
-                    100,
+                    300,
                     "%",
                     IntSetting.STEREOSCOPIC_3D_DEPTH.key,
                     IntSetting.STEREOSCOPIC_3D_DEPTH.defaultValue.toFloat()
@@ -1097,10 +1097,30 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                     R.array.vrCpuLevelNames,
                     R.array.vrCpuLevelValues,
                     IntSetting.VR_CPU_LEVEL.key,
-                    IntSetting.VR_CPU_LEVEL.defaultValue,
-                    IntSetting.VR_IMMERSIVE_MODE.key,
-                    IntSetting.VR_IMMERSIVE_MODE.defaultValue
+                    IntSetting.VR_CPU_LEVEL.defaultValue
                 )
+            )
+            add(
+                    SingleChoiceSetting(
+                            IntSetting.VR_IMMERSIVE_MODE,
+                            R.string.vr_immersive_mode_title,
+                            R.array.vrImmersiveModeNames,
+                            R.array.vrImmersiveModeValues,
+                            IntSetting.VR_IMMERSIVE_MODE.key,
+                            IntSetting.VR_IMMERSIVE_MODE.defaultValue
+                    )
+            )
+            add(
+                    SliderSetting(
+                            IntSetting.VR_IMMERSIVE_POSITIONAL_FACTOR,
+                            R.string.vr_immersive_pos_factor_title,
+                            R.string.vr_immersive_mode_description,
+                            0,
+                            40,
+                            "x",
+                            IntSetting.VR_IMMERSIVE_POSITIONAL_FACTOR.key,
+                            IntSetting.VR_IMMERSIVE_POSITIONAL_FACTOR.defaultValue.toFloat()
+                    )
             )
         }
     }

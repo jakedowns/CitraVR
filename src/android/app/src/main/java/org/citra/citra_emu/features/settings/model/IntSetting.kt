@@ -49,7 +49,7 @@ enum class IntSetting(
         if (hMDType == VRUtils.HMDType.QUEST3.value) 1 else 2),
     VR_CPU_LEVEL("vr_cpu_level", Settings.SECTION_VR, 4),
     VR_IMMERSIVE_MODE("vr_immersive_mode", Settings.SECTION_VR, 0),
-    VR_IMMERSIVE_POSITIONAL_FACTOR("vr_immersive_positional_factor", Settings.SECTION_VR, 40); // should default be 40 or 0? 40 is the max?
+    VR_IMMERSIVE_POSITIONAL_FACTOR("vr_immersive_positional_factor", Settings.SECTION_VR, 1);
     override var int: Int = defaultValue
 
     override val valueAsString: String
