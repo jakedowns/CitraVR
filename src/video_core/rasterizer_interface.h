@@ -8,7 +8,6 @@
 #include <functional>
 #include "common/common_types.h"
 #include "common/vector_math.h"
-#include "core/hw/gpu.h"
 
 namespace Pica {
 struct OutputVertex;
