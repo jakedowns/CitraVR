@@ -84,6 +84,7 @@ struct PicaVSConfigState {
     std::array<u32, 16> output_map;
 
     PicaGSConfigState gs_state;
+
 };
 
 /**

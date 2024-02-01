@@ -3,6 +3,7 @@
 // Refer to the license.txt file included.
 
 #include "common/alignment.h"
+#include "common/settings.h"
 #include "core/memory.h"
 #include "video_core/pica/pica_core.h"
 #include "video_core/rasterizer_accelerated.h"
@@ -10,6 +11,8 @@
 namespace VideoCore {
 
 using Pica::f24;
+
+const std::vector<float> immersiveLevelFactor = {1.0f, 5.0f, 3.0f};
 
 static Common::Vec4f ColorRGBA8(const u32 color) {
     const auto rgba =
@@ -134,6 +137,7 @@ void RasterizerAccelerated::SyncEntireState() {
 
     // Sync uniforms
     SyncClipPlane();
+    SyncVRData();
     SyncDepthScale();
     SyncDepthOffset();
     SyncAlphaTest();
@@ -856,6 +860,21 @@ void RasterizerAccelerated::SyncClipPlane() {
         vs_uniform_block_data.data.clip_coef = new_clip_coef;
         vs_uniform_block_data.dirty = true;
     }
+}
+
+void RasterizerAccelerated::SyncVRData() {
+    if (vs_uniform_block_data.data.vr_immersive_mode_factor != immersiveLevelFactor[Settings::values.vr_immersive_mode.GetValue()])
+    {
+        vs_uniform_block_data.data.vr_immersive_mode_factor = immersiveLevelFactor[Settings::values.vr_immersive_mode.GetValue()];
+        vs_uniform_block_data.dirty = true;
+    }
+}
+
+void RasterizerAccelerated::SetVRData(Common::Vec3f position)
+{
+    //Positional Tinkering
+    vs_uniform_block_data.data.vr_position = position;
+    vs_uniform_block_data.dirty = true;
 }
 
 } // namespace VideoCore

@@ -7,6 +7,8 @@
 #include <atomic>
 #include <functional>
 #include "common/common_types.h"
+#include "common/vector_math.h"
+#include "core/hw/gpu.h"
 
 namespace Pica {
 struct OutputVertex;
@@ -82,5 +84,8 @@ public:
                                    [[maybe_unused]] const DiskResourceLoadCallback& callback) {}
 
     virtual void SyncEntireState() {}
+
+    /// Set VR position data on the rasterizer
+    virtual void SetVRData(Common::Vec3f position) {}
 };
 } // namespace VideoCore

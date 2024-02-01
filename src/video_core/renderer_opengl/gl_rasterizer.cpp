@@ -441,6 +441,9 @@ bool RasterizerOpenGL::Draw(bool accelerate, bool is_indexed) {
     SyncAndUploadLUTs();
     SyncAndUploadLUTsLF();
 
+    //Sync VR data if needed
+    SyncVRData();
+
     // Sync the uniform data
     UploadUniforms(accelerate);
 

@@ -98,9 +98,10 @@ public:
      * center of the layer is placed in the center of the FOV.
      *  @param layers the array of layers to populate
      *  @param layerCount the number of layers in the array
+     *  @param visibleLowerPanel whether the lower panel is shown/visible
      */
     void Frame(const XrSpace& space, std::vector<XrCompositionLayer>& layers,
-               uint32_t& layerCount) const;
+               uint32_t& layerCount, const bool visibleLowerPanel) const;
 
     /** Given an origin, direction of a ray,
      *  returns the coordinates of where the ray will intersects
@@ -157,6 +158,23 @@ private:
     // Density scale for surface. Citra's auto-scale sets this as the internal
     // resolution.
     const uint32_t resolutionFactor_;
+
+    // EXPERIMENTAL: When true, the top screen + its extents
+    // (previously-unseen parts of the scene) are projected onto a 275-degree
+    // cylinder. Note that the perceived resolution is lower,
+    // as the output image is larger, both in texture size and perceived layer
+    // size.
+    //
+    // Rendering a higher-resolution image would likely require
+    // performance optimizations to avoid maxing out the GPU, e.g.:
+    //   - Multiview (requires a merged Citra/CitraVR renderer)
+    //   - Rendering the top-screen and bottom screen separately.
+    const uint32_t immersiveMode_;
+
+    // Used to nicely present the lower panel when in toggleable mode.
+    // Instead of it just appearing instantly, it emerges in a hopefully pleasant
+    // fashion
+    mutable float lowerPanelScaleFactor = 0.0f;
 
     //============================
     // JNI objects

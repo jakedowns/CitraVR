@@ -35,6 +35,9 @@ License     :   Licensed under GPLv3 or any later version.
 #include <sys/prctl.h>
 #include <unistd.h>
 
+#include "video_core/renderer_base.h"
+#include "video_core/video_core.h"
+
 #if defined(DEBUG_INPUT_VERBOSE)
 #define ALOG_INPUT_VERBOSE(...) ALOGI(__VA_ARGS__)
 #else
@@ -206,9 +209,14 @@ public:
             const uint32_t defaultResolutionFactor =
                 GetDefaultGameResolutionFactorForHmd(VRSettings::values.hmd_type);
             const uint32_t resolutionFactorFromPreferences = VRSettings::values.resolution_factor;
-            const uint32_t resolutionFactor = resolutionFactorFromPreferences > 0
+            // add a couple factors to resolution with immersive mode so users
+            // aren't resetting their default settings to get higher res. min
+            // resolution factor for immersive is 3x.
+            const uint32_t immersiveModeOffset = (VRSettings::values.vr_immersive_mode > 0) ? 2 : 0;
+            const uint32_t resolutionFactor = (resolutionFactorFromPreferences > 0
                                                   ? resolutionFactorFromPreferences
-                                                  : defaultResolutionFactor;
+                                                  : defaultResolutionFactor) + immersiveModeOffset;
+
             if (resolutionFactor != defaultResolutionFactor) {
                 ALOGI("Using resolution factor of {}x instead of HMD default {}x", resolutionFactor,
                       defaultResolutionFactor);
@@ -324,14 +332,16 @@ private:
             const auto leftStickHand = InputStateFrame::LEFT_CONTROLLER;
             const auto cStickHand = InputStateFrame::RIGHT_CONTROLLER;
 
-            const auto& leftThumbstickClickState =
-                mInputStateFrame.mThumbStickClickState[InputStateFrame::LEFT_CONTROLLER];
-            const auto& rightThumbstickClickState =
-                mInputStateFrame.mThumbStickClickState[InputStateFrame::RIGHT_CONTROLLER];
-            const int dpadHand =
-                leftThumbstickClickState.currentState    ? InputStateFrame::LEFT_CONTROLLER
-                : rightThumbstickClickState.currentState ? InputStateFrame::RIGHT_CONTROLLER
-                                                         : InputStateFrame::NUM_CONTROLLERS;
+            const auto& leftThumbrestTouchState =
+                mInputStateFrame.mThumbrestTouchState[InputStateFrame::LEFT_CONTROLLER];
+            const auto& rightThumbrestTouchState =
+                mInputStateFrame.mThumbrestTouchState[InputStateFrame::RIGHT_CONTROLLER];
+            const int dpadHand = leftThumbrestTouchState.currentState
+                                     ? InputStateFrame::RIGHT_CONTROLLER
+                                 : rightThumbrestTouchState.currentState
+                                     ? InputStateFrame::LEFT_CONTROLLER
+                                     : InputStateFrame::NUM_CONTROLLERS;
+
             {
                 static constexpr float kThumbStickDirectionThreshold = 0.5f;
                 // Doing it this way helps ensure we don't leave the dpad
@@ -450,6 +460,14 @@ private:
                                            &gOpenXr->forwardDirectionSpace_));
             }
 
+            {
+                const XrReferenceSpaceCreateInfo sci = {XR_TYPE_REFERENCE_SPACE_CREATE_INFO,
+                                                        nullptr, XR_REFERENCE_SPACE_TYPE_VIEW,
+                                                        XrMath::Posef::Identity()};
+                OXR(xrCreateReferenceSpace(gOpenXr->session_, &sci,
+                                           &gOpenXr->viewSpace_));
+            }
+
             // Get the pose of the local space.
             XrSpaceLocation lsl = {XR_TYPE_SPACE_LOCATION};
             OXR(xrLocateSpace(gOpenXr->forwardDirectionSpace_, gOpenXr->localSpace_,
@@ -464,6 +482,41 @@ private:
                                                     XR_REFERENCE_SPACE_TYPE_LOCAL,
                                                     forwardDirectionPose};
             OXR(xrCreateReferenceSpace(gOpenXr->session_, &sci, &gOpenXr->headSpace_));
+        }
+
+        gOpenXr->headLocation = {XR_TYPE_SPACE_LOCATION};
+        OXR(xrLocateSpace(gOpenXr->viewSpace_, gOpenXr->headSpace_, frameState.predictedDisplayTime, &gOpenXr->headLocation));
+
+        bool showLowerPanel = true;
+        // Push the HMD position through to the Rasterizer to pass on to the VS Uniform
+        if (VideoCore::g_renderer && VideoCore::g_renderer->Rasterizer())
+        {
+            //I am confused... but GetRollInRadians appears to return pitch
+            float pitch = XrMath::Quatf::GetRollInRadians(gOpenXr->headLocation.pose.orientation);
+
+            if ((VRSettings::values.vr_immersive_positional_factor == 0) ||
+                (pitch < -0.35f))
+            {
+                //Disable position when looking down at the lower panel
+                Common::Vec3f position = {};
+                VideoCore::g_renderer->Rasterizer()->SetVRData(position);
+            }
+            else
+            {
+                //Only use position if it is enabled, and the user is not looking at the lower panel
+                Common::Vec3f position{-gOpenXr->headLocation.pose.position.y,
+                                       gOpenXr->headLocation.pose.position.x,
+                                       -gOpenXr->headLocation.pose.position.z};// - For some reason Z doesn't affect the actual Z position!
+
+                ALOGI("gOpenXr->headLocation Position : {}.{}.{}",
+                      position.x,
+                      position.y,
+                      position.z);
+
+                position *= VRSettings::values.vr_immersive_positional_factor;
+                VideoCore::g_renderer->Rasterizer()->SetVRData(position);
+                showLowerPanel = false;
+            }
         }
 
         mInputStateFrame.SyncHandPoses(gOpenXr->session_, mInputStateStatic, gOpenXr->localSpace_,
@@ -484,7 +537,7 @@ private:
             layers[layerCount++].Passthrough = passthroughLayer;
         }
 
-        mGameSurfaceLayer->Frame(gOpenXr->localSpace_, layers, layerCount);
+        mGameSurfaceLayer->Frame(gOpenXr->localSpace_, layers, layerCount, showLowerPanel);
 #if defined(UI_LAYER)
         if (gShouldShowErrorMessage) {
             XrCompositionLayerQuad quadLayer = {};

@@ -31,6 +31,8 @@ public:
 
     void SyncEntireState() override;
 
+    void SetVRData(Common::Vec3f position) override;
+
 protected:
     /// Sync fixed-function pipeline state
     virtual void SyncFixedState() = 0;
@@ -104,6 +106,9 @@ protected:
 
     /// Syncs the clip plane state to match the PICA register
     void SyncClipPlane();
+
+    /// Syncs the VR data
+    void SyncVRData();
 
 protected:
     /// Structure that keeps tracks of the vertex shader uniform state

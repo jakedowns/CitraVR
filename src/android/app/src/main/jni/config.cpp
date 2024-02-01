@@ -27,7 +27,7 @@
 
 Config::Config() {
     // TODO: Don't hardcode the path; let the frontend decide where to put the config files.
-    sdl2_config_loc = FileUtil::GetUserPath(FileUtil::UserPath::ConfigDir) + "config.ini";
+    sdl2_config_loc = FileUtil::GetUserPath(FileUtil::UserPath::ConfigDir) + "config.ini.vr0";
     std::string ini_buffer;
     FileUtil::ReadFileToString(true, sdl2_config_loc, ini_buffer);
     if (!ini_buffer.empty()) {
@@ -283,11 +283,26 @@ void Config::ReadValues() {
           "VR", "vr_environment",
           static_cast<long>(VRSettings::values.hmd_type == VRSettings::HMDType::QUEST3 ?
             VRSettings::VREnvironmentType::PASSTHROUGH : VRSettings::VREnvironmentType::VOID));
-
     VRSettings::values.cpu_level =
       VRSettings::values.extra_performance_mode_enabled ? XR_HIGHEST_CPU_PERF_LEVEL
       : VRSettings::CPUPrefToPerfSettingsLevel(sdl2_config->GetInteger(
-            "VR", "vr_cpu_level", XR_HIGHEST_CPU_PREFERENCE));
+            "VR", "vr_cpu_level", 3));
+    VRSettings::values.vr_immersive_mode = sdl2_config->GetInteger(
+            "VR", "vr_immersive_mode", 0);
+    Settings::values.vr_immersive_mode = VRSettings::values.vr_immersive_mode;
+    VRSettings::values.vr_immersive_positional_factor = sdl2_config->GetInteger(
+            "VR", "vr_immersive_positional_factor", 0);
+    Settings::values.vr_immersive_positional_factor = VRSettings::values.vr_immersive_positional_factor;
+
+    if (Settings::values.vr_immersive_mode.GetValue() > 0) {
+      LOG_INFO(Config, "VR immersive mode enabled");
+
+      // no point rendering passthrough in immersive mode
+      VRSettings::values.vr_environment =
+        static_cast<uint32_t>(VRSettings::VREnvironmentType::VOID);
+      // When immersive mode is enabled, only OpenGL is supported.
+      Settings::values.graphics_api = Settings::GraphicsAPI::OpenGL;
+    }
 
     // Miscellaneous
     ReadSetting("Miscellaneous", Settings::values.log_filter);

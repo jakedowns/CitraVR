@@ -38,6 +38,9 @@ layout (binding = 1, std140) uniform vs_data {
 #endif
     bool enable_clip1;
     vec4 clip_coef;
+
+    float vr_immersive_mode_factor;
+    vec3 vr_position;
 };
 
 const vec2 EPSILON_Z = vec2(0.00000001f, -1.00001f);
@@ -125,16 +128,8 @@ void main() {
     vec4 vtx_pos = SanitizeVertex(vert_position);
     gl_Position = vec4(vtx_pos.x, vtx_pos.y, -vtx_pos.z, vtx_pos.w);
 )";
-    if (use_clip_planes) {
-        out += R"(
-        gl_ClipDistance[0] = -vtx_pos.z; // fixed PICA clipping plane z <= 0
-        if (enable_clip1) {
-            gl_ClipDistance[1] = dot(clip_coef, vtx_pos);
-        } else {
-            gl_ClipDistance[1] = 0.0;
-        }
-        )";
-    }
+
+    out += GenerateGLPositionAndGLClipDistanceBlock(use_clip_planes);
 
     out += "}\n";
 
