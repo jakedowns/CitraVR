@@ -191,8 +191,17 @@ object SettingsFile {
 
     private fun getCustomGameSettingsFile(gameId: String): DocumentFile {
         val root = DocumentFile.fromTreeUri(CitraApplication.appContext, Uri.parse(userDirectory))
-        val configDirectory = root!!.findFile("GameSettings")
-        return configDirectory!!.findFile("$gameId.ini")!!
+        // Check if the "GameSettings" directory exists, if not create it
+        var configDirectory = root!!.findFile("GameSettings")
+        if (configDirectory == null) {
+            configDirectory = root.createDirectory("GameSettings")
+        }
+        // Check if the game settings file exists, if not create it
+        var gameSettingsFile = configDirectory!!.findFile("$gameId.ini")
+        if (gameSettingsFile == null) {
+            gameSettingsFile = configDirectory.createFile("text/plain", "$gameId.ini")
+        }
+        return gameSettingsFile!!
     }
 
     private fun sectionFromLine(line: String, isCustomGame: Boolean): SettingSection {
