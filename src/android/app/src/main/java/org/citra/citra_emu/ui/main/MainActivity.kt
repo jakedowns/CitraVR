@@ -35,7 +35,6 @@ import androidx.work.WorkManager
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationBarView
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.citra.citra_emu.R
 import org.citra.citra_emu.activities.EmulationActivity
@@ -57,6 +56,7 @@ import org.citra.citra_emu.utils.ThemeUtil
 import org.citra.citra_emu.viewmodel.GamesViewModel
 import org.citra.citra_emu.viewmodel.HomeViewModel
 import org.citra.citra_emu.vr.VrActivity
+import org.citra.citra_emu.vr.utils.VrMainActivityUtils
 
 class MainActivity : AppCompatActivity(), ThemeProvider {
     private lateinit var binding: ActivityMainBinding
@@ -81,6 +81,8 @@ class MainActivity : AppCompatActivity(), ThemeProvider {
 
         ThemeUtil.setTheme(this)
         super.onCreate(savedInstanceState)
+
+        VrMainActivityUtils.doVersionUpdates(applicationContext)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

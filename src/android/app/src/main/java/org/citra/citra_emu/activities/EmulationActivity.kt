@@ -41,8 +41,10 @@ import org.citra.citra_emu.utils.FileBrowserHelper
 import org.citra.citra_emu.utils.ForegroundService
 import org.citra.citra_emu.utils.EmulationLifecycleUtil
 import org.citra.citra_emu.utils.EmulationMenuSettings
+import org.citra.citra_emu.utils.Log
 import org.citra.citra_emu.utils.ThemeUtil
 import org.citra.citra_emu.viewmodel.EmulationViewModel
+import org.citra.citra_emu.vr.utils.VRUtils
 
 open class EmulationActivity : AppCompatActivity() {
     private val preferences: SharedPreferences
@@ -187,7 +189,8 @@ open class EmulationActivity : AppCompatActivity() {
         }
 
         val button =
-            preferences.getInt(InputBindingSetting.getInputButtonKey(event.keyCode), event.keyCode)
+            preferences.getInt(InputBindingSetting.getInputButtonKey(event.keyCode), VRUtils.ButtonType.androidToNativeLibrary(event.keyCode) ?: event.keyCode)
+        Log.debug("Keycode ${event.keyCode} has entry ${InputBindingSetting.getInputButtonKey(event.keyCode)} and value ${button}. has user-defined pref: ${preferences.getInt(InputBindingSetting.getInputButtonKey(event.keyCode), 0)}")
         val action: Int = when (event.action) {
             KeyEvent.ACTION_DOWN -> {
                 // On some devices, the back gesture / button press is not intercepted by androidx
@@ -254,9 +257,10 @@ open class EmulationActivity : AppCompatActivity() {
             val origValue = event.getAxisValue(axis)
             var value = ControllerMappingHelper.scaleAxis(input, axis, origValue)
             val nextMapping =
-                preferences.getInt(InputBindingSetting.getInputAxisButtonKey(axis), -1)
+                preferences.getInt(InputBindingSetting.getInputAxisButtonKey(axis), VRUtils.getDefaultAxisMapping(axis))
             val guestOrientation =
-                preferences.getInt(InputBindingSetting.getInputAxisOrientationKey(axis), -1)
+                preferences.getInt(InputBindingSetting.getInputAxisOrientationKey(axis), VRUtils.getDefaultOrientationMapping(axis))
+
             if (nextMapping == -1 || guestOrientation == -1) {
                 // Axis is unmapped
                 continue
@@ -265,37 +269,62 @@ open class EmulationActivity : AppCompatActivity() {
                 // Skip joystick wobble
                 value = 0f
             }
+            var isCurrentAxisActive = value != 0f
             when (nextMapping) {
                 NativeLibrary.ButtonType.STICK_LEFT -> {
-                    axisValuesCirclePad[guestOrientation] = value
+                    // In case the stick is bound to more than one input
+                    // (which is always the case when the user remaps one of the
+                    // defaults), only replace previous value if the current axis is active.
+                    val isAlreadyMappedToActive = axisValuesCirclePad[guestOrientation] != 0f
+                    if (isCurrentAxisActive || !isAlreadyMappedToActive) {
+                        axisValuesCirclePad[guestOrientation] = value
+                    }
                 }
 
                 NativeLibrary.ButtonType.STICK_C -> {
-                    axisValuesCStick[guestOrientation] = value
+                    val isAlreadyMappedToActive = axisValuesCStick[guestOrientation] != 0f
+                    if (isCurrentAxisActive || !isAlreadyMappedToActive) {
+                        axisValuesCStick[guestOrientation] = value
+                    }
                 }
 
                 NativeLibrary.ButtonType.DPAD -> {
-                    axisValuesDPad[guestOrientation] = value
+                    val isAlreadyMappedToActive = axisValuesDPad[guestOrientation] != 0f
+                    if (isCurrentAxisActive || !isAlreadyMappedToActive) {
+                      axisValuesDPad[guestOrientation] = value
+                    }
                 }
 
                 NativeLibrary.ButtonType.TRIGGER_L -> {
+                    val isAlreadyMappedToActive = isTriggerPressedL
                     isTriggerPressedLMapped = true
-                    isTriggerPressedL = value != 0f
+                    if (isCurrentAxisActive || !isAlreadyMappedToActive) {
+                        isTriggerPressedL = value != 0f
+                    }
                 }
 
                 NativeLibrary.ButtonType.TRIGGER_R -> {
+                    val isAlreadyMappedToActive = isTriggerPressedR
                     isTriggerPressedRMapped = true
-                    isTriggerPressedR = value != 0f
+                    if (isCurrentAxisActive || !isAlreadyMappedToActive) {
+                        isTriggerPressedR = value != 0f
+                    }
                 }
 
                 NativeLibrary.ButtonType.BUTTON_ZL -> {
+                    val isAlreadyMappedToActive = isTriggerPressedZL
                     isTriggerPressedZLMapped = true
-                    isTriggerPressedZL = value != 0f
+                    if (isCurrentAxisActive || !isAlreadyMappedToActive) {
+                        isTriggerPressedZL = value != 0f
+                    }
                 }
 
                 NativeLibrary.ButtonType.BUTTON_ZR -> {
+                    val isAlreadyMappedToActive = isTriggerPressedZR
                     isTriggerPressedZRMapped = true
-                    isTriggerPressedZR = value != 0f
+                    if (isCurrentAxisActive || !isAlreadyMappedToActive) {
+                      isTriggerPressedZR = value != 0f
+                    }
                 }
             }
         }

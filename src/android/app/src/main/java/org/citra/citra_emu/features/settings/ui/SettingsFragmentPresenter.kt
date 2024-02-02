@@ -629,11 +629,12 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                 add(InputBindingSetting(button, Settings.triggerTitles[i]))
             }
 
-            add(HeaderSetting(R.string.controller_hotkeys))
+            // VR-SPECIFIC: just remove hotkeys for this version.
+         /*   add(HeaderSetting(R.string.controller_hotkeys))
             Settings.hotKeys.forEachIndexed { i: Int, key: String ->
                 val button = getInputObject(key)
                 add(InputBindingSetting(button, Settings.hotkeyTitles[i]))
-            }
+            }*/
         }
     }
 
@@ -1098,6 +1099,24 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                     R.array.vrCpuLevelValues,
                     IntSetting.VR_CPU_LEVEL.key,
                     IntSetting.VR_CPU_LEVEL.defaultValue
+                )
+            )
+            add(
+                SwitchSetting(
+                    IntSetting.NEW_3DS,
+                    R.string.new_3ds,
+                    R.string.vr_new_3ds_description,
+                    IntSetting.NEW_3DS.key,
+                    IntSetting.NEW_3DS.defaultValue
+                )
+            )
+            add(
+                SwitchSetting(
+                    BooleanSetting.VR_IMMERSIVE_MODE,
+                    R.string.vr_immersive_mode_title,
+                    R.string.vr_immersive_mode_description,
+                    BooleanSetting.VR_IMMERSIVE_MODE.key,
+                    BooleanSetting.VR_IMMERSIVE_MODE.defaultValue
                 )
             )
         }

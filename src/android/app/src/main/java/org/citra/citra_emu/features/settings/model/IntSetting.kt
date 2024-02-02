@@ -4,8 +4,8 @@
 
 package org.citra.citra_emu.features.settings.model
 
-import org.citra.citra_emu.vr.VRUtils
-import org.citra.citra_emu.vr.VRUtils.hMDType
+import org.citra.citra_emu.vr.utils.VRUtils
+import org.citra.citra_emu.vr.utils.VRUtils.hMDType
 
 
 enum class IntSetting(
@@ -31,14 +31,14 @@ enum class IntSetting(
     NEW_3DS("is_new_3ds", Settings.SECTION_SYSTEM, 1),
     LLE_APPLETS("lle_applets", Settings.SECTION_SYSTEM, 0),
     CPU_CLOCK_SPEED("cpu_clock_percentage", Settings.SECTION_CORE, 100),
-    LINEAR_FILTERING("filter_mode", Settings.SECTION_RENDERER, 1),
+    LINEAR_FILTERING("filter_mode", Settings.SECTION_RENDERER, 0),
     SHADERS_ACCURATE_MUL("shaders_accurate_mul", Settings.SECTION_RENDERER, 0),
     DISK_SHADER_CACHE("use_disk_shader_cache", Settings.SECTION_RENDERER, 1),
     DUMP_TEXTURES("dump_textures", Settings.SECTION_UTILITY, 0),
     CUSTOM_TEXTURES("custom_textures", Settings.SECTION_UTILITY, 0),
     ASYNC_CUSTOM_LOADING("async_custom_loading", Settings.SECTION_UTILITY, 1),
     PRELOAD_TEXTURES("preload_textures", Settings.SECTION_UTILITY, 0),
-    ENABLE_AUDIO_STRETCHING("enable_audio_stretching", Settings.SECTION_AUDIO, 1),
+    ENABLE_AUDIO_STRETCHING("enable_audio_stretching", Settings.SECTION_AUDIO, 0),
     CPU_JIT("use_cpu_jit", Settings.SECTION_CORE, 1),
     HW_SHADER("use_hw_shader", Settings.SECTION_RENDERER, 1),
     VSYNC("use_vsync_new", Settings.SECTION_RENDERER, 1),
@@ -47,7 +47,7 @@ enum class IntSetting(
     USE_FRAME_LIMIT("use_frame_limit", Settings.SECTION_RENDERER, 1),
     VR_ENVIRONMENT("vr_environment", Settings.SECTION_VR,
         if (hMDType == VRUtils.HMDType.QUEST3.value) 1 else 2),
-    VR_CPU_LEVEL("vr_cpu_level", Settings.SECTION_VR, 4);
+    VR_CPU_LEVEL("vr_cpu_level", Settings.SECTION_VR, 3);
 
     override var int: Int = defaultValue
 

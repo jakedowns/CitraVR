@@ -14,7 +14,7 @@ import org.citra.citra_emu.utils.DocumentsTree
 import org.citra.citra_emu.utils.GpuDriverHelper
 import org.citra.citra_emu.utils.PermissionsHandler
 
-class CitraApplication : Application() {
+open class CitraApplication : Application() {
     private fun createNotificationChannel() {
         with(getSystemService(NotificationManager::class.java)) {
             // General notification

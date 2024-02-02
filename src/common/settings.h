@@ -474,7 +474,7 @@ struct Values {
     SwitchableSetting<bool> shaders_accurate_mul{true, "shaders_accurate_mul"};
     SwitchableSetting<bool> use_vsync_new{true, "use_vsync_new"};
     Setting<bool> use_shader_jit{true, "use_shader_jit"};
-    SwitchableSetting<u32, true> resolution_factor{1, 0, 10, "resolution_factor"};
+    SwitchableSetting<u32, true> resolution_factor{0, 0, 10, "resolution_factor"};
     SwitchableSetting<u16, true> frame_limit{100, 0, 1000, "frame_limit"};
     SwitchableSetting<TextureFilter> texture_filter{TextureFilter::None, "texture_filter"};
     SwitchableSetting<TextureSampling> texture_sampling{TextureSampling::GameControlled,
@@ -509,7 +509,7 @@ struct Values {
     Setting<s32> cardboard_x_shift{0, "cardboard_x_shift"};
     Setting<s32> cardboard_y_shift{0, "cardboard_y_shift"};
 
-    SwitchableSetting<bool> filter_mode{true, "filter_mode"};
+    SwitchableSetting<bool> filter_mode{false, "filter_mode"};
     SwitchableSetting<std::string> pp_shader_name{"none (builtin)", "pp_shader_name"};
     SwitchableSetting<std::string> anaglyph_shader_name{"dubois (builtin)", "anaglyph_shader_name"};
 
@@ -521,7 +521,7 @@ struct Values {
     // Audio
     bool audio_muted;
     SwitchableSetting<AudioEmulation> audio_emulation{AudioEmulation::HLE, "audio_emulation"};
-    SwitchableSetting<bool> enable_audio_stretching{true, "enable_audio_stretching"};
+    SwitchableSetting<bool> enable_audio_stretching{false, "enable_audio_stretching"};
     SwitchableSetting<float, true> volume{1.f, 0.f, 1.f, "volume"};
     Setting<AudioCore::SinkType> output_type{AudioCore::SinkType::Auto, "output_type"};
     Setting<std::string> output_device{"auto", "output_device"};
